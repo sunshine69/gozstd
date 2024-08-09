@@ -6,6 +6,27 @@ I looked around and found nowhere. I need a cross platform to do this to utilize
 
 Thus a quick dirty code appear in here. To my dismay the encoder only support 2 threads? Well I feel it is a bit faster than run zstd thus I will keep using it lol.
 
+look at this benchmark :P
+
+```
+root@work-mbp2018 /m/p/tmp [SIGINT]# time gozstd /mnt/portdata/port-os/u24/base/001-u2404-base-x86_64.xzm > test.zstd
+
+________________________________________________________
+Executed in    4.04 secs    fish           external
+   usr time    3.17 secs    0.77 millis    3.17 secs
+   sys time    3.36 secs  436.19 millis    2.92 secs
+
+root@work-mbp2018 /m/p/tmp# time zstd -3 -c /mnt/portdata/port-os/u24/base/001-u2404-base-x86_64.xzm > test.zstd
+
+________________________________________________________
+Executed in    6.01 secs    fish           external
+   usr time    5.19 secs    1.31 millis    5.19 secs
+   sys time    3.57 secs  682.89 millis    2.88 secs
+
+```
+
+Yay! winning!
+
 I do not intend to make the options completely same as zstd but it works for my goal now.
 
 ## Build and run
