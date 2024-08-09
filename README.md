@@ -4,7 +4,7 @@ It is command line for zstd compression and decompression using golang.
 
 I looked around and found nowhere. I need a cross platform to do this to utilize multicore CPU. zstd does not. pzstd is not available and hard to compile on my platform. 
 
-Thus a quick dirty code appear in here.
+Thus a quick dirty code appear in here. To my dismay the encoder only support 2 threads? Well I feel it is a bit faster than run zstd thus I will keep using it lol.
 
 I do not intend to make the options completely same as zstd but it works for my goal now.
 
