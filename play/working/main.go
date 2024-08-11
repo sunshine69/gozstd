@@ -16,6 +16,15 @@ import (
 
 const oneMB = 1 << 20
 
+var (
+	version   string // Will hold the version number
+	buildTime string // Will hold the build time
+)
+
+func printVersionBuildInfo() {
+	fmt.Printf("Version: %s\nBuild time: %s\n", version, buildTime)
+}
+
 func compressStream(input io.Reader, output io.Writer, compressionLevel int) error {
 	encoder, err := zstd.NewWriter(output, zstd.WithEncoderLevel(zstd.EncoderLevelFromZstd(compressionLevel)))
 	if err != nil {
@@ -93,8 +102,7 @@ func divideFileIntoSegments(fileSize int64, threadCount int) [][2]int64 {
 	var segments [][2]int64
 
 	// Convert file size to MB boundaries
-	const mbSize int64 = 1024 * 1024
-	fileSizeMB := (fileSize + mbSize - 1) / mbSize // Round up to the nearest MB
+	fileSizeMB := (fileSize + oneMB - 1) / oneMB // Round up to the nearest MB
 
 	// Calculate the size of each segment in MB
 	segmentSizeMB := fileSizeMB / int64(threadCount)
@@ -103,9 +111,9 @@ func divideFileIntoSegments(fileSize int64, threadCount int) [][2]int64 {
 	// Calculate the start and end offsets for each segment
 	var start int64
 	for i := 0; i < threadCount; i++ {
-		end := start + segmentSizeMB*mbSize
+		end := start + segmentSizeMB*oneMB
 		if remainingMB > 0 {
-			end += mbSize
+			end += oneMB
 			remainingMB--
 		}
 		if end > fileSize {
@@ -256,6 +264,11 @@ func main() {
 	blockMode := flag.Bool("b", false, "Use block mode for compression. This will use the option -T to utilize more than 2 CPU core. Only benefit if you use compression level higher than 9 otherwise is is not faster in my test but your chances might be vary. You can not use stdin and stdout for this case")
 	// With -l 15 the block mode is around three times faster than stream mode with -T 4. However if -l 9 then it is slightly slower (0.3sec)
 	// So for low level compression <=9 use stream.
+
+	flag.Usage = func() {
+		printVersionBuildInfo()
+		flag.PrintDefaults()
+	}
 	// Parse flags
 	flag.Parse()
 
